@@ -1,0 +1,69 @@
+ #include <LiquidCrystal.h>
+
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;//3/2
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+ #define outputA 7
+ #define outputB 6
+ 
+
+ long counter =0; 
+ 
+ int aState;
+ int aLastState;
+ float distance=0;  
+ float meter = 0;
+
+ void setup() { 
+   pinMode (outputA,INPUT);
+   pinMode (outputB,INPUT);
+   Serial.begin (9600);
+
+   lcd.begin(16, 2);
+   lcd.setCursor(0,1);
+    
+    lcd.print("METER = ");
+
+    lcd.setCursor(0,0);
+     
+     lcd.print("CM = ");
+  
+  
+   // Reads the initial state of the outputA
+   aLastState = digitalRead(outputA);   
+ } 
+
+ void loop() { 
+
+   aState = digitalRead(outputA); // Reads the "current" state of the outputA
+   // If the previous and the current state of the outputA are different, that means a Pulse has occured
+   if (aState != aLastState){     
+     // If the outputB state is different to the outputA state, that means the encoder is rotating clockwise
+     if (digitalRead(outputB) != aState) { 
+       counter --;//++
+       
+     } else {
+       counter ++;//--
+     }
+     Serial.print("Position: ");
+     Serial.println(counter);
+     
+
+     
+   
+     lcd.setCursor(0,1);
+    
+   distance = counter*3;
+   meter=distance/100;
+   Serial.print(distance);
+    lcd.setCursor(8,1);
+    
+    lcd.print(distance);
+
+    lcd.setCursor(5,0);
+     
+     lcd.print(meter);
+   }
+   aLastState = aState; // Updates the previous state of the outputA with the current state
+ }
+ 
